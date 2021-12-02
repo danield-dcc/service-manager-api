@@ -2,9 +2,17 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AddEmployeeTasksToEmployeeInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
 input CreateEmployeeInput {
-  cpf: String!
-  name: String!
+  cpf: String
+  name: String
 }
 
 input CreateManyEmployeesInput {
@@ -12,9 +20,27 @@ input CreateManyEmployeesInput {
   employees: [CreateEmployeeInput!]!
 }
 
+input CreateManyTasksInput {
+  """Array of records to create"""
+  tasks: [CreateTaskInput!]!
+}
+
 input CreateOneEmployeeInput {
   """The record to create"""
   employee: CreateEmployeeInput!
+}
+
+input CreateOneTaskInput {
+  """The record to create"""
+  task: CreateTaskInput!
+}
+
+input CreateTaskInput {
+  dueDate: DateTime
+  dueForecastDate: DateTime
+  name: String
+  responsibleId: String
+  status: TaskEnum
 }
 
 input DateFieldComparison {
@@ -52,7 +78,17 @@ type DeleteManyResponse {
   deletedCount: Int!
 }
 
+input DeleteManyTasksInput {
+  """Filter to find records to delete"""
+  filter: TaskDeleteFilter!
+}
+
 input DeleteOneEmployeeInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneTaskInput {
   """The id of the record to delete."""
   id: ID!
 }
@@ -61,6 +97,16 @@ type Employee {
   cpf: String!
   createdAt: DateTime!
   deletedAt: DateTime!
+  employeeTasks(
+    """Specify to filter the records returned."""
+    filter: TaskFilter = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [TaskSort!] = []
+  ): EmployeeEmployeeTasksConnection
   id: String!
   name: String!
   updatedAt: DateTime!
@@ -115,14 +161,39 @@ type EmployeeDeleteResponse {
   updatedAt: DateTime
 }
 
+type EmployeeEmployeeTasksConnection {
+  """Array of nodes."""
+  nodes: [Task!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
 input EmployeeFilter {
   and: [EmployeeFilter!]
   cpf: StringFieldComparison
   createdAt: DateFieldComparison
   deletedAt: DateFieldComparison
+  employeeTasks: EmployeeFilterTaskFilter
   id: StringFieldComparison
   name: StringFieldComparison
   or: [EmployeeFilter!]
+  updatedAt: DateFieldComparison
+}
+
+input EmployeeFilterTaskFilter {
+  and: [EmployeeFilterTaskFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  dueDate: DateFieldComparison
+  dueForecastDate: DateFieldComparison
+  id: StringFieldComparison
+  name: StringFieldComparison
+  or: [EmployeeFilterTaskFilter!]
+  status: TaskEnumFilterComparison
   updatedAt: DateFieldComparison
 }
 
@@ -171,12 +242,23 @@ input EmployeeUpdateFilter {
 }
 
 type Mutation {
+  addEmployeeTasksToEmployee(input: AddEmployeeTasksToEmployeeInput!): Employee!
   createManyEmployees(input: CreateManyEmployeesInput!): [Employee!]!
+  createManyTasks(input: CreateManyTasksInput!): [Task!]!
   createOneEmployee(input: CreateOneEmployeeInput!): Employee!
+  createOneTask(input: CreateOneTaskInput!): Task!
   deleteManyEmployees(input: DeleteManyEmployeesInput!): DeleteManyResponse!
+  deleteManyTasks(input: DeleteManyTasksInput!): DeleteManyResponse!
   deleteOneEmployee(input: DeleteOneEmployeeInput!): EmployeeDeleteResponse!
+  deleteOneTask(input: DeleteOneTaskInput!): TaskDeleteResponse!
+  removeEmployeeTasksFromEmployee(input: RemoveEmployeeTasksFromEmployeeInput!): Employee!
+  removeResponsibleFromTask(input: RemoveResponsibleFromTaskInput!): Task!
+  setEmployeeTasksOnEmployee(input: SetEmployeeTasksOnEmployeeInput!): Employee!
+  setResponsibleOnTask(input: SetResponsibleOnTaskInput!): Task!
   updateManyEmployees(input: UpdateManyEmployeesInput!): UpdateManyResponse!
+  updateManyTasks(input: UpdateManyTasksInput!): UpdateManyResponse!
   updateOneEmployee(input: UpdateOneEmployeeInput!): Employee!
+  updateOneTask(input: UpdateOneTaskInput!): Task!
 }
 
 type OffsetPageInfo {
@@ -210,6 +292,52 @@ type Query {
     """Specify to sort results."""
     sorting: [EmployeeSort!] = []
   ): EmployeeConnection!
+  task(
+    """The id of the record to find."""
+    id: ID!
+  ): Task
+  tasks(
+    """Specify to filter the records returned."""
+    filter: TaskFilter = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [TaskSort!] = []
+  ): TaskConnection!
+}
+
+input RemoveEmployeeTasksFromEmployeeInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input RemoveResponsibleFromTaskInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
+}
+
+input SetEmployeeTasksOnEmployeeInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input SetResponsibleOnTaskInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
 }
 
 """Sort Directions"""
@@ -241,9 +369,178 @@ input StringFieldComparison {
   notLike: String
 }
 
+type Task {
+  createdAt: DateTime!
+  deletedAt: DateTime!
+  dueDate: DateTime
+  dueForecastDate: DateTime
+  id: String!
+  name: String
+  responsible: Employee
+  status: TaskEnum
+  updatedAt: DateTime!
+}
+
+type TaskAggregateGroupBy {
+  createdAt: DateTime
+  deletedAt: DateTime
+  dueDate: DateTime
+  dueForecastDate: DateTime
+  id: String
+  name: String
+  status: TaskEnum
+  updatedAt: DateTime
+}
+
+type TaskConnection {
+  """Array of nodes."""
+  nodes: [Task!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type TaskCountAggregate {
+  createdAt: Int
+  deletedAt: Int
+  dueDate: Int
+  dueForecastDate: Int
+  id: Int
+  name: Int
+  status: Int
+  updatedAt: Int
+}
+
+input TaskDeleteFilter {
+  and: [TaskDeleteFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  dueDate: DateFieldComparison
+  dueForecastDate: DateFieldComparison
+  id: StringFieldComparison
+  name: StringFieldComparison
+  or: [TaskDeleteFilter!]
+  status: TaskEnumFilterComparison
+  updatedAt: DateFieldComparison
+}
+
+type TaskDeleteResponse {
+  createdAt: DateTime
+  deletedAt: DateTime
+  dueDate: DateTime
+  dueForecastDate: DateTime
+  id: String
+  name: String
+  status: TaskEnum
+  updatedAt: DateTime
+}
+
+enum TaskEnum {
+  END
+  INPROGRESS
+  OPEN
+}
+
+input TaskEnumFilterComparison {
+  eq: TaskEnum
+  gt: TaskEnum
+  gte: TaskEnum
+  iLike: TaskEnum
+  in: [TaskEnum!]
+  is: Boolean
+  isNot: Boolean
+  like: TaskEnum
+  lt: TaskEnum
+  lte: TaskEnum
+  neq: TaskEnum
+  notILike: TaskEnum
+  notIn: [TaskEnum!]
+  notLike: TaskEnum
+}
+
+input TaskFilter {
+  and: [TaskFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  dueDate: DateFieldComparison
+  dueForecastDate: DateFieldComparison
+  id: StringFieldComparison
+  name: StringFieldComparison
+  or: [TaskFilter!]
+  responsible: TaskFilterEmployeeFilter
+  status: TaskEnumFilterComparison
+  updatedAt: DateFieldComparison
+}
+
+input TaskFilterEmployeeFilter {
+  and: [TaskFilterEmployeeFilter!]
+  cpf: StringFieldComparison
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  id: StringFieldComparison
+  name: StringFieldComparison
+  or: [TaskFilterEmployeeFilter!]
+  updatedAt: DateFieldComparison
+}
+
+type TaskMaxAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  dueDate: DateTime
+  dueForecastDate: DateTime
+  id: String
+  name: String
+  status: TaskEnum
+  updatedAt: DateTime
+}
+
+type TaskMinAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  dueDate: DateTime
+  dueForecastDate: DateTime
+  id: String
+  name: String
+  status: TaskEnum
+  updatedAt: DateTime
+}
+
+input TaskSort {
+  direction: SortDirection!
+  field: TaskSortFields!
+  nulls: SortNulls
+}
+
+enum TaskSortFields {
+  createdAt
+  deletedAt
+  dueDate
+  dueForecastDate
+  id
+  name
+  status
+  updatedAt
+}
+
+input TaskUpdateFilter {
+  and: [TaskUpdateFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  dueDate: DateFieldComparison
+  dueForecastDate: DateFieldComparison
+  id: StringFieldComparison
+  name: StringFieldComparison
+  or: [TaskUpdateFilter!]
+  status: TaskEnumFilterComparison
+  updatedAt: DateFieldComparison
+}
+
 input UpdateEmployeeInput {
   cpf: String
-  id: Int
+  id: ID
   name: String
 }
 
@@ -260,10 +557,35 @@ type UpdateManyResponse {
   updatedCount: Int!
 }
 
+input UpdateManyTasksInput {
+  """Filter used to find fields to update"""
+  filter: TaskUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: UpdateTaskInput!
+}
+
 input UpdateOneEmployeeInput {
   """The id of the record to update"""
   id: ID!
 
   """The update to apply."""
   update: UpdateEmployeeInput!
+}
+
+input UpdateOneTaskInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateTaskInput!
+}
+
+input UpdateTaskInput {
+  dueDate: DateTime
+  dueForecastDate: DateTime
+  id: ID
+  name: String
+  responsibleId: String
+  status: TaskEnum
 }

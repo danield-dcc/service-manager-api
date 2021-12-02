@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { AppService } from './app.service';
 import { EmployeesModule } from './modules/employees/employees.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { EmployeesModule } from './modules/employees/employees.module';
     }),
     TypeOrmModule.forRoot(),
     EmployeesModule,
+    TasksModule,
   ],
   providers: [AppService],
 })
