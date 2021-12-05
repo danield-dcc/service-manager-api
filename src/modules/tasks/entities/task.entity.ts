@@ -1,6 +1,14 @@
 import { BaseEntity } from 'src/modules/bases/entities/base.entity';
 import { Employee } from 'src/modules/employees/entities/employee.entity';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Service } from 'src/modules/services/entities/service.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { TaskEnum } from './task.enum';
 
 @Entity()
@@ -17,9 +25,18 @@ export class Task extends BaseEntity {
   @Column()
   status: TaskEnum;
 
-  @ManyToOne(() => Employee, (employee) => employee.employeeTasks, {nullable:true, eager: true})
+  @ManyToOne(() => Employee, (employee) => employee.employeeTasks, {
+    nullable: true,
+    eager: true,
+  })
   responsible: Employee;
 
   @Column()
-  responsibleId: string
+  responsibleId: string;
+
+  @ManyToMany(() => Service, (services) => services.tasks, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  services: Service[];
 }

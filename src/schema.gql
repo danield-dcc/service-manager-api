@@ -10,6 +10,22 @@ input AddEmployeeTasksToEmployeeInput {
   relationIds: [ID!]!
 }
 
+input AddServicesToTaskInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input AddTasksToServiceInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
 input CreateEmployeeInput {
   cpf: String
   name: String
@@ -18,6 +34,11 @@ input CreateEmployeeInput {
 input CreateManyEmployeesInput {
   """Array of records to create"""
   employees: [CreateEmployeeInput!]!
+}
+
+input CreateManyServicesInput {
+  """Array of records to create"""
+  services: [CreateServiceInput!]!
 }
 
 input CreateManyTasksInput {
@@ -30,9 +51,19 @@ input CreateOneEmployeeInput {
   employee: CreateEmployeeInput!
 }
 
+input CreateOneServiceInput {
+  """The record to create"""
+  service: CreateServiceInput!
+}
+
 input CreateOneTaskInput {
   """The record to create"""
   task: CreateTaskInput!
+}
+
+input CreateServiceInput {
+  dueForecastDate: DateTime
+  name: String
 }
 
 input CreateTaskInput {
@@ -78,12 +109,22 @@ type DeleteManyResponse {
   deletedCount: Int!
 }
 
+input DeleteManyServicesInput {
+  """Filter to find records to delete"""
+  filter: ServiceDeleteFilter!
+}
+
 input DeleteManyTasksInput {
   """Filter to find records to delete"""
   filter: TaskDeleteFilter!
 }
 
 input DeleteOneEmployeeInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteOneServiceInput {
   """The id of the record to delete."""
   id: ID!
 }
@@ -243,21 +284,33 @@ input EmployeeUpdateFilter {
 
 type Mutation {
   addEmployeeTasksToEmployee(input: AddEmployeeTasksToEmployeeInput!): Employee!
+  addServicesToTask(input: AddServicesToTaskInput!): Task!
+  addTasksToService(input: AddTasksToServiceInput!): Service!
   createManyEmployees(input: CreateManyEmployeesInput!): [Employee!]!
+  createManyServices(input: CreateManyServicesInput!): [Service!]!
   createManyTasks(input: CreateManyTasksInput!): [Task!]!
   createOneEmployee(input: CreateOneEmployeeInput!): Employee!
+  createOneService(input: CreateOneServiceInput!): Service!
   createOneTask(input: CreateOneTaskInput!): Task!
   deleteManyEmployees(input: DeleteManyEmployeesInput!): DeleteManyResponse!
+  deleteManyServices(input: DeleteManyServicesInput!): DeleteManyResponse!
   deleteManyTasks(input: DeleteManyTasksInput!): DeleteManyResponse!
   deleteOneEmployee(input: DeleteOneEmployeeInput!): EmployeeDeleteResponse!
+  deleteOneService(input: DeleteOneServiceInput!): ServiceDeleteResponse!
   deleteOneTask(input: DeleteOneTaskInput!): TaskDeleteResponse!
   removeEmployeeTasksFromEmployee(input: RemoveEmployeeTasksFromEmployeeInput!): Employee!
   removeResponsibleFromTask(input: RemoveResponsibleFromTaskInput!): Task!
+  removeServicesFromTask(input: RemoveServicesFromTaskInput!): Task!
+  removeTasksFromService(input: RemoveTasksFromServiceInput!): Service!
   setEmployeeTasksOnEmployee(input: SetEmployeeTasksOnEmployeeInput!): Employee!
   setResponsibleOnTask(input: SetResponsibleOnTaskInput!): Task!
+  setServicesOnTask(input: SetServicesOnTaskInput!): Task!
+  setTasksOnService(input: SetTasksOnServiceInput!): Service!
   updateManyEmployees(input: UpdateManyEmployeesInput!): UpdateManyResponse!
+  updateManyServices(input: UpdateManyServicesInput!): UpdateManyResponse!
   updateManyTasks(input: UpdateManyTasksInput!): UpdateManyResponse!
   updateOneEmployee(input: UpdateOneEmployeeInput!): Employee!
+  updateOneService(input: UpdateOneServiceInput!): Service!
   updateOneTask(input: UpdateOneTaskInput!): Task!
 }
 
@@ -292,6 +345,20 @@ type Query {
     """Specify to sort results."""
     sorting: [EmployeeSort!] = []
   ): EmployeeConnection!
+  service(
+    """The id of the record to find."""
+    id: ID!
+  ): Service
+  services(
+    """Specify to filter the records returned."""
+    filter: ServiceFilter = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [ServiceSort!] = []
+  ): ServiceConnection!
   task(
     """The id of the record to find."""
     id: ID!
@@ -324,6 +391,170 @@ input RemoveResponsibleFromTaskInput {
   relationId: ID!
 }
 
+input RemoveServicesFromTaskInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input RemoveTasksFromServiceInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+type Service {
+  createdAt: DateTime!
+  deletedAt: DateTime!
+  dueForecastDate: DateTime!
+  id: String!
+  name: String!
+  tasks(
+    """Specify to filter the records returned."""
+    filter: TaskFilter = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [TaskSort!] = []
+  ): ServiceTasksConnection
+  updatedAt: DateTime!
+}
+
+type ServiceAggregateGroupBy {
+  createdAt: DateTime
+  deletedAt: DateTime
+  dueForecastDate: DateTime
+  id: String
+  name: String
+  updatedAt: DateTime
+}
+
+type ServiceConnection {
+  """Array of nodes."""
+  nodes: [Service!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type ServiceCountAggregate {
+  createdAt: Int
+  deletedAt: Int
+  dueForecastDate: Int
+  id: Int
+  name: Int
+  updatedAt: Int
+}
+
+input ServiceDeleteFilter {
+  and: [ServiceDeleteFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  dueForecastDate: DateFieldComparison
+  id: StringFieldComparison
+  name: StringFieldComparison
+  or: [ServiceDeleteFilter!]
+  updatedAt: DateFieldComparison
+}
+
+type ServiceDeleteResponse {
+  createdAt: DateTime
+  deletedAt: DateTime
+  dueForecastDate: DateTime
+  id: String
+  name: String
+  updatedAt: DateTime
+}
+
+input ServiceFilter {
+  and: [ServiceFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  dueForecastDate: DateFieldComparison
+  id: StringFieldComparison
+  name: StringFieldComparison
+  or: [ServiceFilter!]
+  tasks: ServiceFilterTaskFilter
+  updatedAt: DateFieldComparison
+}
+
+input ServiceFilterTaskFilter {
+  and: [ServiceFilterTaskFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  dueDate: DateFieldComparison
+  dueForecastDate: DateFieldComparison
+  id: StringFieldComparison
+  name: StringFieldComparison
+  or: [ServiceFilterTaskFilter!]
+  status: TaskEnumFilterComparison
+  updatedAt: DateFieldComparison
+}
+
+type ServiceMaxAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  dueForecastDate: DateTime
+  id: String
+  name: String
+  updatedAt: DateTime
+}
+
+type ServiceMinAggregate {
+  createdAt: DateTime
+  deletedAt: DateTime
+  dueForecastDate: DateTime
+  id: String
+  name: String
+  updatedAt: DateTime
+}
+
+input ServiceSort {
+  direction: SortDirection!
+  field: ServiceSortFields!
+  nulls: SortNulls
+}
+
+enum ServiceSortFields {
+  createdAt
+  deletedAt
+  dueForecastDate
+  id
+  name
+  updatedAt
+}
+
+type ServiceTasksConnection {
+  """Array of nodes."""
+  nodes: [Task!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+input ServiceUpdateFilter {
+  and: [ServiceUpdateFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  dueForecastDate: DateFieldComparison
+  id: StringFieldComparison
+  name: StringFieldComparison
+  or: [ServiceUpdateFilter!]
+  updatedAt: DateFieldComparison
+}
+
 input SetEmployeeTasksOnEmployeeInput {
   """The id of the record."""
   id: ID!
@@ -338,6 +569,22 @@ input SetResponsibleOnTaskInput {
 
   """The id of relation."""
   relationId: ID!
+}
+
+input SetServicesOnTaskInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input SetTasksOnServiceInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
 }
 
 """Sort Directions"""
@@ -377,6 +624,16 @@ type Task {
   id: String!
   name: String
   responsible: Employee
+  services(
+    """Specify to filter the records returned."""
+    filter: ServiceFilter = {}
+
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 10}
+
+    """Specify to sort results."""
+    sorting: [ServiceSort!] = []
+  ): TaskServicesConnection
   status: TaskEnum
   updatedAt: DateTime!
 }
@@ -471,6 +728,7 @@ input TaskFilter {
   name: StringFieldComparison
   or: [TaskFilter!]
   responsible: TaskFilterEmployeeFilter
+  services: TaskFilterServiceFilter
   status: TaskEnumFilterComparison
   updatedAt: DateFieldComparison
 }
@@ -483,6 +741,17 @@ input TaskFilterEmployeeFilter {
   id: StringFieldComparison
   name: StringFieldComparison
   or: [TaskFilterEmployeeFilter!]
+  updatedAt: DateFieldComparison
+}
+
+input TaskFilterServiceFilter {
+  and: [TaskFilterServiceFilter!]
+  createdAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  dueForecastDate: DateFieldComparison
+  id: StringFieldComparison
+  name: StringFieldComparison
+  or: [TaskFilterServiceFilter!]
   updatedAt: DateFieldComparison
 }
 
@@ -506,6 +775,17 @@ type TaskMinAggregate {
   name: String
   status: TaskEnum
   updatedAt: DateTime
+}
+
+type TaskServicesConnection {
+  """Array of nodes."""
+  nodes: [Service!]!
+
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 input TaskSort {
@@ -557,6 +837,14 @@ type UpdateManyResponse {
   updatedCount: Int!
 }
 
+input UpdateManyServicesInput {
+  """Filter used to find fields to update"""
+  filter: ServiceUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: UpdateServiceInput!
+}
+
 input UpdateManyTasksInput {
   """Filter used to find fields to update"""
   filter: TaskUpdateFilter!
@@ -573,12 +861,26 @@ input UpdateOneEmployeeInput {
   update: UpdateEmployeeInput!
 }
 
+input UpdateOneServiceInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateServiceInput!
+}
+
 input UpdateOneTaskInput {
   """The id of the record to update"""
   id: ID!
 
   """The update to apply."""
   update: UpdateTaskInput!
+}
+
+input UpdateServiceInput {
+  dueForecastDate: DateTime
+  id: ID
+  name: String
 }
 
 input UpdateTaskInput {

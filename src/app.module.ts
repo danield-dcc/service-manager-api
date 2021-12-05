@@ -5,6 +5,7 @@ import { join } from 'path';
 import { AppService } from './app.service';
 import { EmployeesModule } from './modules/employees/employees.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { ServicesModule } from './modules/services/services.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
     TypeOrmModule.forRoot(),
     EmployeesModule,
     TasksModule,
+    ServicesModule,
   ],
   providers: [AppService],
 })
