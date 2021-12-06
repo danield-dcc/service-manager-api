@@ -10,14 +10,6 @@ input AddEmployeeTasksToEmployeeInput {
   relationIds: [ID!]!
 }
 
-input AddServicesToTaskInput {
-  """The id of the record."""
-  id: ID!
-
-  """The ids of the relations."""
-  relationIds: [ID!]!
-}
-
 input AddTasksToServiceInput {
   """The id of the record."""
   id: ID!
@@ -284,7 +276,6 @@ input EmployeeUpdateFilter {
 
 type Mutation {
   addEmployeeTasksToEmployee(input: AddEmployeeTasksToEmployeeInput!): Employee!
-  addServicesToTask(input: AddServicesToTaskInput!): Task!
   addTasksToService(input: AddTasksToServiceInput!): Service!
   createManyEmployees(input: CreateManyEmployeesInput!): [Employee!]!
   createManyServices(input: CreateManyServicesInput!): [Service!]!
@@ -300,11 +291,11 @@ type Mutation {
   deleteOneTask(input: DeleteOneTaskInput!): TaskDeleteResponse!
   removeEmployeeTasksFromEmployee(input: RemoveEmployeeTasksFromEmployeeInput!): Employee!
   removeResponsibleFromTask(input: RemoveResponsibleFromTaskInput!): Task!
-  removeServicesFromTask(input: RemoveServicesFromTaskInput!): Task!
+  removeServiceFromTask(input: RemoveServiceFromTaskInput!): Task!
   removeTasksFromService(input: RemoveTasksFromServiceInput!): Service!
   setEmployeeTasksOnEmployee(input: SetEmployeeTasksOnEmployeeInput!): Employee!
   setResponsibleOnTask(input: SetResponsibleOnTaskInput!): Task!
-  setServicesOnTask(input: SetServicesOnTaskInput!): Task!
+  setServiceOnTask(input: SetServiceOnTaskInput!): Task!
   setTasksOnService(input: SetTasksOnServiceInput!): Service!
   updateManyEmployees(input: UpdateManyEmployeesInput!): UpdateManyResponse!
   updateManyServices(input: UpdateManyServicesInput!): UpdateManyResponse!
@@ -391,12 +382,12 @@ input RemoveResponsibleFromTaskInput {
   relationId: ID!
 }
 
-input RemoveServicesFromTaskInput {
+input RemoveServiceFromTaskInput {
   """The id of the record."""
   id: ID!
 
-  """The ids of the relations."""
-  relationIds: [ID!]!
+  """The id of relation."""
+  relationId: ID!
 }
 
 input RemoveTasksFromServiceInput {
@@ -571,12 +562,12 @@ input SetResponsibleOnTaskInput {
   relationId: ID!
 }
 
-input SetServicesOnTaskInput {
+input SetServiceOnTaskInput {
   """The id of the record."""
   id: ID!
 
-  """The ids of the relations."""
-  relationIds: [ID!]!
+  """The id of relation."""
+  relationId: ID!
 }
 
 input SetTasksOnServiceInput {
@@ -624,16 +615,7 @@ type Task {
   id: String!
   name: String
   responsible: Employee
-  services(
-    """Specify to filter the records returned."""
-    filter: ServiceFilter = {}
-
-    """Limit or page results."""
-    paging: OffsetPaging = {limit: 10}
-
-    """Specify to sort results."""
-    sorting: [ServiceSort!] = []
-  ): TaskServicesConnection
+  service: Service
   status: TaskEnum
   updatedAt: DateTime!
 }
@@ -728,7 +710,7 @@ input TaskFilter {
   name: StringFieldComparison
   or: [TaskFilter!]
   responsible: TaskFilterEmployeeFilter
-  services: TaskFilterServiceFilter
+  service: TaskFilterServiceFilter
   status: TaskEnumFilterComparison
   updatedAt: DateFieldComparison
 }
@@ -775,17 +757,6 @@ type TaskMinAggregate {
   name: String
   status: TaskEnum
   updatedAt: DateTime
-}
-
-type TaskServicesConnection {
-  """Array of nodes."""
-  nodes: [Service!]!
-
-  """Paging information"""
-  pageInfo: OffsetPageInfo!
-
-  """Fetch total count of records"""
-  totalCount: Int!
 }
 
 input TaskSort {

@@ -34,9 +34,9 @@ export class Task extends BaseEntity {
   @Column()
   responsibleId: string;
 
-  @ManyToMany(() => Service, (services) => services.tasks, {
+  @ManyToOne(() => Service, (service) => service.tasks, {
     nullable: true,
-    onDelete: 'CASCADE',
+    onDelete: "CASCADE"
   })
-  services: Service[];
+  services: Service;
 }

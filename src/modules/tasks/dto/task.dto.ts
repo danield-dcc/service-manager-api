@@ -11,7 +11,7 @@ import { TaskEnum } from '../entities/task.enum';
 
 @ObjectType('Task')
 @FilterableRelation('responsible', () => EmployeeDTO, { nullable: true })
-@FilterableOffsetConnection('services', () => ServiceDTO, { nullable: true })
+@FilterableRelation('service', () => ServiceDTO, { nullable: true })
 export class TaskDTO extends BaseDTO {
   @FilterableField({ nullable: true })
   name: string;
